@@ -14,8 +14,8 @@ export default class Test extends Command {
             cooldown: 3,
             options: [
                 {
-                    name: "one",
-                    description: "option one",
+                    name: "events",
+                    description: "get event IDs",
                     type: ApplicationCommandOptionType.Subcommand
                 },
                 {
