@@ -1,4 +1,4 @@
-import { Client, Collection } from "discord.js";
+import { Client, Collection, GatewayIntentBits } from "discord.js";
 import ICustomClient from "../interfaces/ICustomClient";
 import Handler from "./Handler";
 import Command from "./Command";
@@ -11,7 +11,12 @@ export default class CustomClient extends Client implements ICustomClient {
     cooldowns: Collection<string, Collection<string, number>>;
 
     constructor() {
-        super({ intents: [] });
+        super({
+            intents: [
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.MessageContent,
+                GatewayIntentBits.GuildMessages]
+        });
         this.handler = new Handler(this);
         this.commands = new Collection();
         this.subCommands = new Collection();
