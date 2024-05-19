@@ -1,11 +1,11 @@
 import { ChatInputCommandInteraction, Collection, EmbedBuilder, Events } from "discord.js";
-import CustomClient from "../../base/classes/CustomClient";
+import DiscordClient from "../../base/classes/DiscordClient";
 import Event from "../../base/classes/Event";
 import Command from "../../base/classes/Command";
 
 export default class CommandHandler extends Event {
 
-    constructor(client: CustomClient) {
+    constructor(client: DiscordClient) {
         super(client, {
             name: Events.InteractionCreate,
             description: "Command handler event.",

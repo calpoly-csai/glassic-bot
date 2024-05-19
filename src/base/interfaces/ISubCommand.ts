@@ -1,8 +1,8 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import CustomClient from "../classes/CustomClient";
+import DiscordClient from "../classes/DiscordClient";
 
 export default interface ISubCommand {
-    client: CustomClient;
+    client: DiscordClient;
     name: string;
 
     Execute(interaction: ChatInputCommandInteraction): void;

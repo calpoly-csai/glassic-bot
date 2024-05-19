@@ -1,15 +1,15 @@
 import { glob } from "glob";
 import IHandler from "../interfaces/IHandler";
 import path from "path";
-import CustomClient from "./CustomClient";
+import DiscordClient from "./DiscordClient";
 import Event from "./Event";
 import SubCommand from "./SubCommand";
 import Command from "./Command";
 
 export default class Handler implements IHandler {
-    client: CustomClient;
+    client: DiscordClient;
 
-    constructor(client: CustomClient) {
+    constructor(client: DiscordClient) {
         this.client = client;
     }
 

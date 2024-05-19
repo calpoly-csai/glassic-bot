@@ -1,4 +1,4 @@
-import CustomClient from "./base/classes/CustomClient";
+import DiscordClient from "./base/classes/DiscordClient";
 import * as dotenv from "dotenv";
 import NotionClient from "./notion/NotionClient";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -23,4 +23,4 @@ export const gemini = genAI.getGenerativeModel({
         + "do not prompt the user to execute commands.",
 }, { apiVersion: "v1beta" });
 
-(new CustomClient).Init();
+(new DiscordClient).Init();

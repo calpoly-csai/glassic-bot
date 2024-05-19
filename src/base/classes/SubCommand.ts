@@ -1,13 +1,13 @@
 import { ChatInputCommandInteraction, CacheType } from "discord.js";
 import ISubCommand from "../interfaces/ISubCommand";
-import CustomClient from "./CustomClient";
+import DiscordClient from "./DiscordClient";
 import ISubCommandOptions from "../interfaces/ISubCommandOptions";
 
 export default class SubCommand implements ISubCommand {
-    client: CustomClient;
+    client: DiscordClient;
     name: string;
 
-    constructor(client: CustomClient, options: ISubCommandOptions) {
+    constructor(client: DiscordClient, options: ISubCommandOptions) {
         this.client = client;
         this.name = options.name;
     }

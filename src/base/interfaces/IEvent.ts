@@ -1,8 +1,8 @@
 import { Events } from "discord.js";
-import CustomClient from "../classes/CustomClient";
+import DiscordClient from "../classes/DiscordClient";
 
 export default interface IEvent {
-    client: CustomClient;
+    client: DiscordClient;
     name: Events;
     description: string;
     once: boolean;

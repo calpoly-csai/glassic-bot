@@ -1,5 +1,5 @@
 import { Collection, EmbedBuilder, Events, REST, Routes, TextChannel } from "discord.js";
-import CustomClient from "../../base/classes/CustomClient";
+import DiscordClient from "../../base/classes/DiscordClient";
 import Event from "../../base/classes/Event";
 import Command from "../../base/classes/Command";
 import { scheduleJob } from "node-schedule";
@@ -8,7 +8,7 @@ import { isFullPage } from "@notionhq/client";
 import { statusToEmoji } from "../../notion/NotionClient";
 
 export default class Ready extends Event {
-    constructor(client: CustomClient) {
+    constructor(client: DiscordClient) {
         super(client,
             {
                 name: Events.ClientReady,
