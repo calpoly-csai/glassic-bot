@@ -1,7 +1,9 @@
-import { Events, Message } from "discord.js";
+import { EmbedBuilder, Events, Message } from "discord.js";
 import CustomClient from "../../base/classes/CustomClient";
 import Event from "../../base/classes/Event";
-import { gemini } from "../..";
+import { gemini, notionClient } from "../..";
+import { statusToEmoji } from "../../notion/NotionClient";
+import { isFullPage } from "@notionhq/client";
 
 export default class MessageHandler extends Event {
     constructor(client: CustomClient) {
@@ -19,7 +21,54 @@ export default class MessageHandler extends Event {
             const result = await gemini.generateContent(prompt);
             const response = await result.response;
             const text = response.text();
-            msg.reply(text);
+
+            if (text.startsWith("MSG:")) {
+                msg.reply(text.slice(4));
+            } else if (text.startsWith("CMD:")) {
+                console.log("doing it", text)
+                const command = text.split(":")[1];
+                console.log("command", command + ";")
+                if (command.startsWith("events")) {
+                    // send the user a list of upcoming events and their status
+
+                    console.log("events")
+                    const events = await notionClient.getNotionEvents();
+
+                    let embed = new EmbedBuilder().setColor("Blue");
+
+                    events.results.forEach((e) => {
+                        if (!isFullPage(e)) return;
+
+                        let topic = e.properties.Topic;
+                        if (!(topic.type == "title")) return;
+                        let dateString = e.properties.Date;
+                        if (!(dateString.type == "date")) return;
+                        const status = e.properties.Status;
+                        if (!(status.type == "status")) return;
+
+                        console.log(e);
+                        console.log(dateString);
+                        const date = new Date(Date.parse(dateString.date?.start || "??"));
+
+                        let title = ((date.toLocaleDateString("en-US", {
+                            weekday: 'long',
+                            month: 'long',
+                            day: 'numeric',
+                        }) || "Unknown"))
+
+                        embed.addFields({
+                            name: title,
+                            value: `> ${statusToEmoji(status.status?.name)} [${topic.title[0].plain_text}](${e.url})`
+                        })
+                    })
+
+
+                    msg.reply({
+                        content: `Here's what's coming in the next few weeks:`
+                        , embeds: [embed]
+                    });
+                }
+            }
         }
     }
 }

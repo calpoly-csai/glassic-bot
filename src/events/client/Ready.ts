@@ -1,7 +1,11 @@
-import { Collection, Events, REST, Routes } from "discord.js";
+import { Collection, EmbedBuilder, Events, REST, Routes, TextChannel } from "discord.js";
 import CustomClient from "../../base/classes/CustomClient";
 import Event from "../../base/classes/Event";
 import Command from "../../base/classes/Command";
+import { scheduleJob } from "node-schedule";
+import { notionClient } from "../..";
+import { isFullPage } from "@notionhq/client";
+import { statusToEmoji } from "../../notion/NotionClient";
 
 export default class Ready extends Event {
     constructor(client: CustomClient) {
@@ -31,6 +35,61 @@ export default class Ready extends Event {
         });
 
         console.log(`Successfully registered ${setCommands.length} commands.`)
+
+
+        this.setupSync();
+
+    }
+
+    private setupSync = () => {
+        let counter = 0;
+
+        const job = scheduleJob('15 * * * * *', async () => {
+            // set up interval message 
+            var generalChannel = this.client.channels.cache.find(channel => channel.id === "1241586080743030878")!;
+
+            const events = await notionClient.getNotionEvents();
+
+            let embed = new EmbedBuilder().setColor("Blue");
+
+            events.results.forEach((e) => {
+                if (!isFullPage(e)) return;
+
+                let topic = e.properties.Topic;
+                if (!(topic.type == "title")) return;
+                let dateString = e.properties.Date;
+                if (!(dateString.type == "date")) return;
+                const status = e.properties.Status;
+                if (!(status.type == "status")) return;
+
+                console.log(e);
+                console.log(dateString);
+                const date = new Date(Date.parse(dateString.date?.start || "??"));
+
+                let title = ((date.toLocaleDateString("en-US", {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                }) || "Unknown"))
+
+                embed.addFields({
+                    name: title,
+                    value: `> ${statusToEmoji(status.status?.name)} [${topic.title[0].plain_text}](${e.url})`
+                })
+            })
+
+
+            if ((generalChannel instanceof TextChannel)) {
+
+                (generalChannel as TextChannel).send({
+                    content: `Message schedule to send every minute at :15 (upcount: ${counter++}).`
+                    , embeds: [embed]
+                });
+            }
+        });
+
+        console.log("Successfully set up interval message.")
+
     }
 
 
