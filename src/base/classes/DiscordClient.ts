@@ -4,7 +4,7 @@ import Handler from "./Handler";
 import Command from "./Command";
 import SubCommand from "./SubCommand";
 
-export default class CustomClient extends Client implements ICustomClient {
+export default class DiscordClient extends Client implements ICustomClient {
     handler: Handler;
     commands: Collection<string, Command>;
     subCommands: Collection<string, SubCommand>;

@@ -1,10 +1,10 @@
 import { ApplicationCommandOptionType, CacheType, ChatInputCommandInteraction, PermissionFlagsBits, PermissionsBitField } from "discord.js";
 import Command from "../base/classes/Command";
-import CustomClient from "../base/classes/CustomClient";
+import DiscordClient from "../base/classes/DiscordClient";
 import Category from "../base/enums/Category";
 
 export default class Test extends Command {
-    constructor(client: CustomClient) {
+    constructor(client: DiscordClient) {
         super(client, {
             name: "test",
             description: "Test command.",
