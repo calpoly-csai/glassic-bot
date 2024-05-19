@@ -1,10 +1,10 @@
 import { Events, Message } from "discord.js";
-import CustomClient from "../../base/classes/CustomClient";
 import Event from "../../base/classes/Event";
 import { gemini } from "../..";
+import DiscordClient from "../../base/classes/DiscordClient";
 
 export default class MessageHandler extends Event {
-    constructor(client: CustomClient) {
+    constructor(client: DiscordClient) {
         super(client, {
             name: Events.MessageCreate,
             description: "Message handler event.",
