@@ -50,14 +50,14 @@ export default class Ready extends Event {
             // set up interval message 
             var generalChannel = this.client.channels.cache.find(channel => channel.id === "1241586080743030878")!;
 
-            const events = await this.client.notionClient.getNotionEvents();
-
-            const embed = await notionEventsToDiscordEmbed(events);
+            const [embed, content] = await Promise.all([
+                await notionEventsToDiscordEmbed(await this.client.notionClient.getNotionEvents()),
+                await this.client.llm.paraphrase("Here's what's coming up in the next month:"),
+            ]);
 
             if ((generalChannel instanceof TextChannel)) {
-
                 (generalChannel as TextChannel).send({
-                    content: `Message schedule to send every minute at :15 (upcount: ${counter++}).`
+                    content: content
                     , embeds: [embed]
                 });
             }
