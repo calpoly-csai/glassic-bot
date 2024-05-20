@@ -2,7 +2,7 @@ import { Collection, EmbedBuilder, Events, REST, Routes, TextChannel } from "dis
 import DiscordClient from "../../base/classes/DiscordClient";
 import Event from "../../base/classes/Event";
 import Command from "../../base/classes/Command";
-import { scheduleJob } from "node-schedule";
+import { RecurrenceRule, scheduleJob } from "node-schedule";
 import { notionClient } from "../..";
 import { isFullPage } from "@notionhq/client";
 import { statusToEmoji } from "../../notion/NotionClient";
@@ -36,7 +36,6 @@ export default class Ready extends Event {
 
         console.log(`Successfully registered ${setCommands.length} commands.`)
 
-
         this.setupSync();
 
     }
@@ -44,7 +43,12 @@ export default class Ready extends Event {
     private setupSync = () => {
         let counter = 0;
 
-        const job = scheduleJob('15 * * * * *', async () => {
+        const rule = new RecurrenceRule();
+        rule.minute = 15;
+        rule.hour = 8;
+        rule.tz = "America/Los_Angeles";
+
+        const job = scheduleJob('15 8 * * *', async () => {
             // set up interval message 
             var generalChannel = this.client.channels.cache.find(channel => channel.id === "1241586080743030878")!;
 
@@ -62,8 +66,6 @@ export default class Ready extends Event {
                 const status = e.properties.Status;
                 if (!(status.type == "status")) return;
 
-                console.log(e);
-                console.log(dateString);
                 const date = new Date(Date.parse(dateString.date?.start || "??"));
 
                 let title = ((date.toLocaleDateString("en-US", {
