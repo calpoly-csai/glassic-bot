@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import DiscordClient from "../base/classes/DiscordClient";
 import SubCommand from "../base/classes/SubCommand";
-import { notionClient } from "..";
 import { isFullPage, isFullPageOrDatabase } from "@notionhq/client";
 
 export default class TestEvents extends SubCommand {
@@ -13,7 +12,7 @@ export default class TestEvents extends SubCommand {
 
     async Execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply({ ephemeral: false });
-        const events = await notionClient.getNotionEvents();
+        const events = await this.client.notionClient.getNotionEvents();
 
         let str = "";
         let embed = new EmbedBuilder().setColor("Blue");

@@ -3,6 +3,8 @@ import ICustomClient from "../interfaces/ICustomClient";
 import Handler from "./Handler";
 import Command from "./Command";
 import SubCommand from "./SubCommand";
+import NotionClient from "../../notion/NotionClient";
+import LLM from "../../llm/LLM";
 
 export default class DiscordClient extends Client implements ICustomClient {
     handler: Handler;
@@ -10,7 +12,10 @@ export default class DiscordClient extends Client implements ICustomClient {
     subCommands: Collection<string, SubCommand>;
     cooldowns: Collection<string, Collection<string, number>>;
 
-    constructor() {
+    notionClient: NotionClient;
+    llm: LLM;
+
+    constructor(notionClient: NotionClient, llm: LLM) {
         super({
             intents: [
                 GatewayIntentBits.Guilds,
@@ -21,6 +26,9 @@ export default class DiscordClient extends Client implements ICustomClient {
         this.commands = new Collection();
         this.subCommands = new Collection();
         this.cooldowns = new Collection();
+
+        this.notionClient = notionClient;
+        this.llm = llm;
     }
 
     Init(): void {

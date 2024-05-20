@@ -3,7 +3,6 @@ import DiscordClient from "../../base/classes/DiscordClient";
 import Event from "../../base/classes/Event";
 import Command from "../../base/classes/Command";
 import { scheduleJob } from "node-schedule";
-import { notionClient } from "../..";
 import { isFullPage } from "@notionhq/client";
 import { statusToEmoji } from "../../notion/NotionClient";
 
@@ -37,7 +36,7 @@ export default class Ready extends Event {
         console.log(`Successfully registered ${setCommands.length} commands.`)
 
 
-        this.setupSync();
+        // this.setupSync();
 
     }
 
@@ -48,7 +47,7 @@ export default class Ready extends Event {
             // set up interval message 
             var generalChannel = this.client.channels.cache.find(channel => channel.id === "1241586080743030878")!;
 
-            const events = await notionClient.getNotionEvents();
+            const events = await this.client.notionClient.getNotionEvents();
 
             let embed = new EmbedBuilder().setColor("Blue");
 
