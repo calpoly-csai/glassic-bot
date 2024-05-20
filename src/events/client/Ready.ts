@@ -46,7 +46,7 @@ export default class Ready extends Event {
         rule.hour = 8;
         rule.tz = "America/Los_Angeles";
 
-        const job = scheduleJob('15 8 * * *', async () => {
+        const job = scheduleJob(rule, async () => {
             // set up interval message 
             var generalChannel = this.client.channels.cache.find(channel => channel.id === "1241586080743030878")!;
 
