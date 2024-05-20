@@ -5,6 +5,7 @@ import Command from "../../base/classes/Command";
 import { scheduleJob } from "node-schedule";
 import { isFullPage } from "@notionhq/client";
 import { statusToEmoji } from "../../notion/NotionClient";
+import notionEventsToDiscordEmbed from "../../utils/notionEventsToDiscordEmbed";
 
 export default class Ready extends Event {
     constructor(client: DiscordClient) {
@@ -49,33 +50,7 @@ export default class Ready extends Event {
 
             const events = await this.client.notionClient.getNotionEvents();
 
-            let embed = new EmbedBuilder().setColor("Blue");
-
-            events.results.forEach((e) => {
-                if (!isFullPage(e)) return;
-
-                let topic = e.properties.Topic;
-                if (!(topic.type == "title")) return;
-                let dateString = e.properties.Date;
-                if (!(dateString.type == "date")) return;
-                const status = e.properties.Status;
-                if (!(status.type == "status")) return;
-
-                console.log(e);
-                console.log(dateString);
-                const date = new Date(Date.parse(dateString.date?.start || "??"));
-
-                let title = ((date.toLocaleDateString("en-US", {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric',
-                }) || "Unknown"))
-
-                embed.addFields({
-                    name: title,
-                    value: `> ${statusToEmoji(status.status?.name)} [${topic.title[0].plain_text}](${e.url})`
-                })
-            })
+            const embed = await notionEventsToDiscordEmbed(events);
 
 
             if ((generalChannel instanceof TextChannel)) {

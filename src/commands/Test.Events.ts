@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import DiscordClient from "../base/classes/DiscordClient";
 import SubCommand from "../base/classes/SubCommand";
 import { isFullPage, isFullPageOrDatabase } from "@notionhq/client";
+import notionEventsToDiscordEmbed from "../utils/notionEventsToDiscordEmbed";
 
 export default class TestEvents extends SubCommand {
     constructor(client: DiscordClient) {
@@ -13,51 +14,7 @@ export default class TestEvents extends SubCommand {
     async Execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply({ ephemeral: false });
         const events = await this.client.notionClient.getNotionEvents();
-
-        let str = "";
-        let embed = new EmbedBuilder().setColor("Blue");
-
-        events.results.forEach((e) => {
-            if (!isFullPage(e)) return;
-
-            let topic = e.properties.Topic;
-            if (!(topic.type == "title")) return;
-            let dateString = e.properties.Date;
-            if (!(dateString.type == "date")) return;
-            const status = e.properties.Status;
-            if (!(status.type == "status")) return;
-
-            console.log(e);
-            console.log(dateString);
-            const date = new Date(Date.parse(dateString.date?.start || "??"));
-
-            let title = ((date.toLocaleDateString("en-US", {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-            }) || "Unknown"))
-
-            embed.addFields({
-                name: title,
-                value: `> ${this.statusToEmoji(status.status?.name)} [${topic.title[0].plain_text}](${e.url})`
-            })
-        })
-
+        const embed = await notionEventsToDiscordEmbed(events);
         interaction.editReply({ embeds: [embed] })
-    }
-
-    private statusToEmoji(status: string | undefined) {
-        switch (status) {
-            case "Planning":
-                return "🟡";
-            case "Guest speaker confirmed":
-                return "🟢";
-            case "Presentation ready":
-                return "🟢";
-            case "Idea":
-                return "🔴";
-            default:
-                return "⚪";
-        }
     }
 }
