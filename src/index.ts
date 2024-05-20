@@ -7,5 +7,6 @@ dotenv.config();
 
 const notionClient = new NotionClient();
 const gemini = new Gemini();
+export const CONFIG = require(`${process.cwd()}/config.json`);
 
 (new DiscordClient(notionClient, gemini)).Init();

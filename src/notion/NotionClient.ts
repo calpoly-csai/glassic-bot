@@ -1,4 +1,5 @@
 import { Client } from "@notionhq/client";
+import { CONFIG } from "..";
 
 export default class NotionClient extends Client {
     constructor() {
@@ -9,7 +10,7 @@ export default class NotionClient extends Client {
 
     getNotionEvents = async () => {
         const info = await this.databases.query({
-            database_id: "c8be488ab08d4a0d839719cb0143c1ee",
+            database_id: CONFIG.notion.database_id,
             filter: {
                 property: "Date",
                 date: {
