@@ -1,11 +1,9 @@
-import { Collection, EmbedBuilder, Events, REST, Routes, TextChannel } from "discord.js";
+import { Collection, Events, REST, Routes, TextChannel } from "discord.js";
 import DiscordClient from "../../base/classes/DiscordClient";
 import Event from "../../base/classes/Event";
 import Command from "../../base/classes/Command";
 import { RecurrenceRule, scheduleJob } from "node-schedule";
-import { notionClient } from "../..";
-import { isFullPage } from "@notionhq/client";
-import { statusToEmoji } from "../../notion/NotionClient";
+import notionEventsToDiscordEmbed from "../../utils/notionEventsToDiscordEmbed";
 
 export default class Ready extends Event {
     constructor(client: DiscordClient) {
@@ -52,34 +50,9 @@ export default class Ready extends Event {
             // set up interval message 
             var generalChannel = this.client.channels.cache.find(channel => channel.id === "1241586080743030878")!;
 
-            const events = await notionClient.getNotionEvents();
+            const events = await this.client.notionClient.getNotionEvents();
 
-            let embed = new EmbedBuilder().setColor("Blue");
-
-            events.results.forEach((e) => {
-                if (!isFullPage(e)) return;
-
-                let topic = e.properties.Topic;
-                if (!(topic.type == "title")) return;
-                let dateString = e.properties.Date;
-                if (!(dateString.type == "date")) return;
-                const status = e.properties.Status;
-                if (!(status.type == "status")) return;
-
-                const date = new Date(Date.parse(dateString.date?.start || "??"));
-
-                let title = ((date.toLocaleDateString("en-US", {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric',
-                }) || "Unknown"))
-
-                embed.addFields({
-                    name: title,
-                    value: `> ${statusToEmoji(status.status?.name)} [${topic.title[0].plain_text}](${e.url})`
-                })
-            })
-
+            const embed = await notionEventsToDiscordEmbed(events);
 
             if ((generalChannel instanceof TextChannel)) {
 

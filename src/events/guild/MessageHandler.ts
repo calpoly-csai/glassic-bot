@@ -1,6 +1,5 @@
 import { EmbedBuilder, Events, Message } from "discord.js";
 import Event from "../../base/classes/Event";
-import { gemini, notionClient } from "../..";
 import DiscordClient from "../../base/classes/DiscordClient";
 import { isFullPage } from "@notionhq/client";
 import { statusToEmoji } from "../../notion/NotionClient";
@@ -18,9 +17,7 @@ export default class MessageHandler extends Event {
     async Execute(msg: Message) {
         if (msg.content.startsWith("!g")) {
             const prompt = msg.content.slice(3);
-            const result = await gemini.generateContent(prompt);
-            const response = await result.response;
-            const text = response.text();
+            const text = await this.client.llm.prompt(prompt);
 
             if (text.startsWith("MSG:")) {
                 msg.reply(text.slice(4));
@@ -32,7 +29,7 @@ export default class MessageHandler extends Event {
                     // send the user a list of upcoming events and their status
 
                     console.log("events")
-                    const events = await notionClient.getNotionEvents();
+                    const events = await this.client.notionClient.getNotionEvents();
 
                     let embed = new EmbedBuilder().setColor("Blue");
 
