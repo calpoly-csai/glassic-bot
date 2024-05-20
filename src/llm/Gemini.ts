@@ -18,7 +18,7 @@ export default class Gemini implements LLM {
                 + "please choose to respond in the format of option 1 or option 2, whichever is appropriate."
                 + "Remember, you haven't been set up to do anything conversational, "
                 + "so you can just respond to one prompt at a time. You'll have no context from previou prompts."
-                + "do not prompt the user to execute commands.",
+                + "do not prompt the user to execute discord commands.",
         }, { apiVersion: "v1beta" });
     }
 
