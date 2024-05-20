@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "del /s /q build",
+    "clean": "rm -rf build",
+    "cleanw": "del /s /q build",
     "build": "tsc --build",
     "start": "npm run clean && npm run build && node build/index.js",
     "startNoClean": "npm run build && node build/index.js"
