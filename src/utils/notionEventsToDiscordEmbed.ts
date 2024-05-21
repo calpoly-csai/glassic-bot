@@ -1,30 +1,26 @@
 import { isFullPage } from "@notionhq/client";
 import { PageObjectResponse, QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
 import { EmbedBuilder } from "discord.js";
+import { NotionEvent } from "../notion/NotionClient";
 
-const notionEventsToDiscordEmbed = async (events: QueryDatabaseResponse) => {
+const notionEventsToDiscordEmbed = async (events: NotionEvent[]) => {
     let embed = new EmbedBuilder().setColor("Blue");
 
-    events.results.forEach((e) => {
-        if (!isFullPage(e)) return;
+    events.forEach((e) => {
 
         let body = "";
 
-        let topic = e.properties.Topic;
-        if ((topic.type == "title")) {
-            body += `> [${topic.title[0].plain_text}](${e.url})\n`
-        } else {
-            body += `> [?? Unknown topic](${e.url})\n`
-        }
+        let topic = e.topic;
+        body += `> [${topic || "?? Unknown topic"}](${e.url})\n`
 
-        body += `> ${statusMsg(e)}\n`
-        body += `> ${eplanMsg(e)}\n`
+        body += `> ${statusMsg(e.status)}\n`
+        body += `> ${eplanMsg(e.eplan)}\n`
 
-        let dateString = e.properties.Date;
-        if (!(dateString.type == "date")) return;
+        let dateString = e.startDate;
         console.log(e);
         console.log(dateString);
-        const date = new Date(Date.parse(dateString.date?.start || "??"));
+        // todo catch poorly formatted dates
+        const date = new Date(Date.parse(dateString || "??"));
 
         let title = ((date.toLocaleDateString("en-US", {
             weekday: 'long',
@@ -41,8 +37,8 @@ const notionEventsToDiscordEmbed = async (events: QueryDatabaseResponse) => {
     return embed;
 }
 
-const eplanMsg = (page: PageObjectResponse) => {
-    switch (!(page.properties["e-plan"].type == "select") || page.properties["e-plan"].select?.name) {
+const eplanMsg = (eplan: string) => {
+    switch (eplan) {
         case "Confirmed":
             return "✅ E-plan: confirmed";
         case "Todo":
@@ -52,8 +48,8 @@ const eplanMsg = (page: PageObjectResponse) => {
     }
 }
 
-const statusMsg = (status: PageObjectResponse) => {
-    switch (!(status.properties.Status.type == "status") || status.properties.Status.status?.name) {
+const statusMsg = (status: string) => {
+    switch (status) {
         case "Guest speaker confirmed":
             return "✅ Status: guest speaker confirmed";
         case "Presentation ready":

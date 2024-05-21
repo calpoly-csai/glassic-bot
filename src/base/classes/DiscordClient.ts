@@ -20,7 +20,8 @@ export default class DiscordClient extends Client implements ICustomClient {
             intents: [
                 GatewayIntentBits.Guilds,
                 GatewayIntentBits.MessageContent,
-                GatewayIntentBits.GuildMessages]
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.GuildScheduledEvents]
         });
         this.handler = new Handler(this);
         this.commands = new Collection();

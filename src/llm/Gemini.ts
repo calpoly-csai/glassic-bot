@@ -8,7 +8,7 @@ export default class Gemini implements LLM {
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
         this.gemini = genAI.getGenerativeModel({
             model: "gemini-1.5-flash-latest",
-            systemInstruction: "You are a Discord bot named Glass, "
+            systemInstruction: "You are a Discord bot named Glassic, "
                 + "tasked with helping the Computer Science and Artificial Intelligence Club (CS+AI) "
                 + "manage their Discord server, Google Calendar, and Notion workspace. "
                 + "You can respond to prompts in two ways, in these formats: \n"
