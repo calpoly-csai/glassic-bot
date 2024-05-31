@@ -17,8 +17,6 @@ const notionEventsToDiscordEmbed = async (events: NotionEvent[]) => {
         body += `> ${eplanMsg(e.eplan)}\n`
 
         let dateString = e.startDate;
-        console.log(e);
-        console.log(dateString);
         // todo catch poorly formatted dates
         const date = new Date(Date.parse(dateString || "??"));
 

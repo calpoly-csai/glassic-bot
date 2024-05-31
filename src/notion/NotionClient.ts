@@ -37,6 +37,7 @@ export default class NotionClient extends Client {
                         eplan: (current.properties["e-plan"].type == "select" && current.properties["e-plan"].select?.name) || "",
                         status: (current.properties.Status.type == "status" && current.properties.Status.status?.name) || "",
                         url: current.url,
+                        location: (current.properties.Location.type == "select" && current.properties.Location.select?.name) || "",
                     })
                 }
                 return accumulator;
@@ -52,4 +53,5 @@ export interface NotionEvent {
     eplan: string,
     status: string,
     url: string,
+    location: string,
 }
