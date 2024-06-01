@@ -22,6 +22,10 @@ const getMessageEventsJob = (client: DiscordClient, channelId: string) => async 
         return;
     };
     const [embed, content] = doubleRes;
+    if (!content) {
+        log.fail("LLM failed to paraphrase the message, likely tried to execute a command instead.");
+        return;
+    }
 
     // send the message to the channel
     let sendRes = await targetChannel.send({ content: content, embeds: [embed] })

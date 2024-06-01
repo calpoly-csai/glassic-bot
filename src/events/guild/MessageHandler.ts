@@ -2,8 +2,11 @@ import { Events, Message } from "discord.js";
 import Event from "../../base/classes/Event";
 import DiscordClient from "../../base/classes/DiscordClient";
 import notionEventsToDiscordEmbed from "../../utils/notionEventsToDiscordEmbed";
+import { reactWithEmojiAuto } from "../../utils/reactWithEmojiAuto";
+import { CONFIG } from "../..";
 
 export default class MessageHandler extends Event {
+    autoReactChannels: Set<string>;
     constructor(client: DiscordClient) {
         super(client, {
             name: Events.MessageCreate,
@@ -11,23 +14,16 @@ export default class MessageHandler extends Event {
             once: false,
         })
         console.log("created message handler.")
+
+        this.autoReactChannels = new Set(CONFIG.discord.auto_reaction_channel_ids)
+        console.log("autoReactChannels: ", this.autoReactChannels)
     }
 
     async Execute(msg: Message) {
         if (msg.content.startsWith("!g")) {
             const prompt = msg.content.slice(3);
-            const text = await this.client.llm.prompt(prompt);
-
-            if (text.startsWith("MSG:")) {
-                msg.reply(text.slice(4));
-            } else if (text.startsWith("CMD:")) {
-                console.log("doing it", text)
-                const command = text.split(":")[1];
-                console.log("command", command + ";")
-                if (command.startsWith("events")) {
-                    // send the user a list of upcoming events and their status
-
-                    console.log("events")
+            const text = await this.client.llm.prompt(prompt, new Map([[
+                "list-member-events", async () => {
                     const events = await this.client.notionClient.getNotionMemberEvents();
                     const embed = await notionEventsToDiscordEmbed(events);
 
@@ -36,7 +32,17 @@ export default class MessageHandler extends Event {
                         , embeds: [embed]
                     });
                 }
+            ]]));
+
+            if (!text) {
+                return;
             }
+
+            msg.reply(text);
+        } else if (!msg.author.bot && this.autoReactChannels.has(msg.channelId.trim())) {
+            // ensure the author is not a bot, react if no
+            reactWithEmojiAuto(this.client, msg);
         }
+
     }
 }

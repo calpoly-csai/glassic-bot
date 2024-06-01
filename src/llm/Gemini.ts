@@ -1,5 +1,6 @@
 import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
 import LLM from "./LLM";
+import { InteractionReplyOptions, MessagePayload } from "discord.js";
 
 export default class Gemini implements LLM {
     gemini: GenerativeModel;
@@ -13,42 +14,49 @@ export default class Gemini implements LLM {
                 manage their Discord server, Google Calendar, and Notion workspace. 
 
                 You can respond to prompts in two ways, in these formats: 
-                - option 1: "${ResType.MSG}:[response]" : respond to a prompt with a message, as usual. 
-                - option 2: "${ResType.CMD}:[command]" : call a command. commands available to you will be specified in the prompt.\
+                - option 1: "[content]" : respond to a prompt with a message, as usual. 
+                - option 2: "${ResType.CMD}:[content]" : call a command. commands available to you will be specified in the prompt.\
                     if no commands are specified, assume you can't execute any commands.
 
-                please choose to respond in the format of option 1 or option 2, whichever is appropriate.\
-                any formatting or additional requests given in each prompt should all fit within the [response] section, and \
-                you should retain this formatting always.
+                please respond in the one of the formats above, whichever is appropriate.\
+                any formatting or additional requests given in each future prompts should all\
+                fit within the [content] section, and you should retain the above formatting always.
 
                 Remember, you haven't been set up to do anything conversational, \
-                so you can just respond to one prompt at a time. You'll have no context from previou prompts.\
+                so you can just respond to one prompt at a time. You'll have no context from previous prompts.\
                 do not prompt the user to execute discord commands.`,
         }, { apiVersion: "v1beta" });
     }
 
-    async prompt(prompt: string, cmds?: Map<string, () => string>) {
+    async prompt(prompt: string, cmds?: Map<string, () => Promise<string | void>>) {
         if (cmds) {
             prompt += "\n\nCommands available to you are: ";
             for (let [cmd] of cmds.entries()) {
+                if (cmd.indexOf(" ") !== -1) throw new Error("Gemini command names cannot contain spaces.");
+
                 prompt += `\n- ${cmd}`;
             }
+            prompt += "\n\nPlease respond with CMD:[content] to call a command or MSG:[content] to respond with a message."
         }
 
-        let res = (await this.gemini.generateContent(prompt).then()).response.text();
-        const [resType, ...msg_etc] = res.split(":");
-        let msg = msg_etc.join(":");
-        if (resType === ResType.CMD) {
+        let res = (await this.gemini.generateContent(prompt)
+            .catch((err) => console.log("[Gemini - ERROR]", JSON.stringify(err, null, 2))))
+        if (!res) return;
+
+        let content = res.response.text().trim();
+        console.log("[Gemini]", content);
+
+        if (content.startsWith(ResType.CMD)) {
             if (!cmds) return "You prompted me to execute a command, I don't have any commands to execute for this message.";
 
-            let cmd = res[1];
+            let cmd = content.slice(ResType.CMD.length + ":".length).trim().split(" ")[0];
             if (cmds.has(cmd)) {
                 return cmds.get(cmd)!();
             } else {
                 return "Your prompt made me think of a command, but I don't know what that command is.";
             }
         } else {
-            return msg;
+            return content;
         }
     }
 
@@ -66,5 +74,4 @@ export default class Gemini implements LLM {
 
 enum ResType {
     CMD = "CMD",
-    MSG = "MSG",
 }

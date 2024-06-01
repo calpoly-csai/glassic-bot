@@ -7,6 +7,7 @@ export interface IConfig {
             channel_id: string;
             success_roles: string[];
             error_roles: string[];
-        }
+        },
+        auto_reaction_channel_ids: string[];
     },
 }
