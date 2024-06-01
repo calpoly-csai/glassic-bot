@@ -1,38 +1,64 @@
+import { CONFIG } from "..";
+import DiscordClient from "../base/classes/DiscordClient";
+import sendDiscordJobSummary from "./sendDiscordJobSummary";
+
 class JobLogger {
     jobName: string;
+    client: DiscordClient;
+    log = "";
 
-    constructor(jobName: string) {
+    constructor(jobName: string, client: DiscordClient) {
         this.jobName = jobName;
+        this.client = client;
+        this.log = "";
     }
 
     start() {
-        console.log(`[${this.jobName}] Starting job...`);
+        const msg = `[${this.jobName}] Starting job...`;
+        console.log(msg);
+        this.log += msg + "\n";
     }
 
     info(message: string) {
-        console.log(`[${this.jobName} - INFO] ${message}`);
+        const msg = `[${this.jobName} - INFO] ${message}`;
+        console.log(msg);
+        this.log += msg + "\n";
     }
 
     warn(message: string) {
-        console.warn(`[${this.jobName} - WARN] ${message}`);
+        const msg = `[${this.jobName} - WARN] ${message}`;
+        console.warn(msg);
+        this.log += msg + "\n";
     }
 
     error(attemptedThing: string, error: any) {
-        console.error(`[${this.jobName} - ERROR] When attempting to ${attemptedThing}:`);
+        const msg = `[${this.jobName} - ERROR] When attempting to ${attemptedThing}:`;
+        console.error(msg);
         console.error(JSON.stringify(error, null, 2))
-    }
-
-    fatal(attemptedThing: string, error: any) {
-        this.error(attemptedThing, error);
-        this.fail("Fatal error occurred.");
+        this.log += msg + "\n" + JSON.stringify(error, null, 2) + "\n";
     }
 
     fail(message: string) {
-        console.error(`[${this.jobName} - FAIL] ${message}`);
+        const msg = `[${this.jobName} - FAIL] ${message}`;
+        console.error(msg);
+        this.log += msg + "\n";
+        this.logToDiscord();
     }
 
     end() {
-        console.log(`[${this.jobName}] Job completed.`);
+        const msg = `[${this.jobName}] Job completed.`;
+        console.log(msg);
+        this.log += msg + "\n";
+        this.logToDiscord();
+    }
+
+    logToDiscord() {
+        sendDiscordJobSummary(
+            this.client,
+            CONFIG.discord.logging.channel_id,
+            this.jobName,
+            this.log
+        );
     }
 }
 

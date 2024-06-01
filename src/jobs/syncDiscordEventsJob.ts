@@ -4,8 +4,11 @@ import { NotionEvent } from "../notion/NotionClient";
 import JobLogger from "./JobLogger";
 
 const getDiscordEventsJob = (client: DiscordClient) => async () => {
-    const logger = new JobLogger("Sync Discord Events");
+    const logger = new JobLogger("Sync Discord Events", client);
     logger.start();
+    let success_new = 0;
+    let success_edit = 0;
+    let fail = 0;
 
     // create a map of string to string
     // to store notion event id --> discord event id
@@ -17,14 +20,17 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
     const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID!);
 
     if (!guild) {
-        logger.fatal("get the guild", "Guild not found.");
+        logger.fail("Failed to fetch guild - guild with provided ID not found?.");
         return;
     }
 
     // fetch notion events
     let notionEventsRes = await client.notionClient.getNotionEvents()
-        .catch((err) => { logger.fatal("get events from notion", err) });
-    if (!notionEventsRes) return;
+        .catch((err) => { logger.error("get events from notion", err) });
+    if (!notionEventsRes) {
+        logger.fail("Failed to fetch Notion events.");
+        return
+    };
 
     // create a map of notion event id to the event object
     notionEventsRes.forEach(async event => {
@@ -34,8 +40,11 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
 
     // fetch discord event scheduler
     let discordCurrentEventsRes = await guild.scheduledEvents.fetch()
-        .catch((err) => { logger.fatal("get current Discord events", err) });
-    if (!discordCurrentEventsRes) return;
+        .catch((err) => { logger.error("get current Discord events", err) });
+    if (!discordCurrentEventsRes) {
+        logger.fail("Failed to fetch current Discord events.");
+        return;
+    };
     // iterate through the events and check if they have a notion id, log if they do/dont
     discordCurrentEventsRes.forEach((event) => {
         // check if this event has a notion page id
@@ -52,13 +61,14 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
 
     // now we have a map of notion event id to discord event id
     // sync the Notion to Discord
-    notionIdToDiscordId.forEach(async (discordId, notionId) => {
+    for (const [notionId, discordId] of notionIdToDiscordId) {
         if (!discordId) {
             // create a new event
             const notionEvent = notionEvents.get(notionId);
             if (!notionEvent) {
+                fail++;
                 logger.warn("Notion event not found for Notion ID: " + notionId + ". Skipping.");
-                return;
+                continue;
             }
 
             let data = {
@@ -74,24 +84,28 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
             }
             let discordEventRes = await guild.scheduledEvents.create(data)
                 .catch((err) => {
-                    logger.fatal("create a new event on Discord", { "event data": data, "rest error": err })
+                    logger.error("create a new event on Discord", { "event data": data, "rest error": err })
+                    fail++;
                 });
-            if (!discordEventRes) return;
+            if (!discordEventRes) continue;
             // successfully created the event!
             logger.info(`Created event for Notion event "${notionEvent?.topic || "Unknown topic"}" (ID ${notionId})`);
+            success_new++;
             notionIdToDiscordId.set(notionId, discordEventRes.id);
         } else {
             // event already exists, update it!
             const NotionEvent = notionEvents.get(notionId);
             if (!NotionEvent) {
                 logger.warn("Notion event not found for Notion ID: " + notionId + ". Skipping.");
-                return;
+                fail++;
+                continue;
             }
 
             let discordEvent = guild.scheduledEvents.cache.get(discordId);
             if (!discordEvent) {
                 logger.warn("Discord event not found for Discord event ID: " + discordId + ". Skipping.");
-                return;
+                fail++;
+                continue;
             }
 
             // update the event
@@ -106,12 +120,18 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
                     location: NotionEvent.location || "Unknown location",
                 }
             })
-                .catch((err) => { logger.fatal("update an existing event on Discord", err) });
-            if (!discordEditRes) return;
+                .catch((err) => { logger.error("update an existing event on Discord", err) });
+            if (!discordEditRes) {
+                fail++;
+                continue;
+            }
             // successfully updated the event!
+            success_edit++;
             logger.info(`Updated event for Notion event "${NotionEvent?.topic || "Unknown topic"}" (ID ${notionId})`);
         }
-    })
+    }
+    logger.info(`Created ${success_new} new events, updated ${success_edit} existing events. Couldn't sync ${fail} events.`)
+    logger.end();
 
 }
 
