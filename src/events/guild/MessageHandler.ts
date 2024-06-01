@@ -28,7 +28,7 @@ export default class MessageHandler extends Event {
                     // send the user a list of upcoming events and their status
 
                     console.log("events")
-                    const events = await this.client.notionClient.getNotionEvents();
+                    const events = await this.client.notionClient.getNotionMemberEvents();
                     const embed = await notionEventsToDiscordEmbed(events);
 
                     msg.reply({

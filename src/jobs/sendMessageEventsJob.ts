@@ -1,4 +1,4 @@
-import { EmbedBuilder, TextChannel } from "discord.js";
+import { TextChannel } from "discord.js";
 import notionEventsToDiscordEmbed from "../utils/notionEventsToDiscordEmbed";
 import DiscordClient from "../base/classes/DiscordClient";
 import JobLogger from "./JobLogger";
@@ -14,7 +14,7 @@ const getMessageEventsJob = (client: DiscordClient, channelId: string) => async 
 
     // get the events from Notion and paraphrase the message
     let doubleRes = await Promise.all([
-        await notionEventsToDiscordEmbed(await client.notionClient.getNotionEvents()),
+        await notionEventsToDiscordEmbed(await client.notionClient.getNotionMemberEvents()),
         await client.llm.paraphrase("Here's what's coming up in the next month:"),
     ]).catch((err) => { log.error("fetch Notion Events and LLM paraphrase", err); })
     if (!doubleRes) {

@@ -1,4 +1,4 @@
-import { Collection, GuildScheduledEvent, GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildScheduledEventStatus } from "discord.js";
+import { GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildScheduledEventStatus } from "discord.js";
 import DiscordClient from "../base/classes/DiscordClient";
 import { NotionEvent } from "../notion/NotionClient";
 import JobLogger from "./JobLogger";
@@ -25,7 +25,7 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
     }
 
     // fetch notion events
-    let notionEventsRes = await client.notionClient.getNotionEvents()
+    let notionEventsRes = await client.notionClient.getNotionMemberEvents()
         .catch((err) => { logger.error("get events from notion", err) });
     if (!notionEventsRes) {
         logger.fail("Failed to fetch Notion events.");

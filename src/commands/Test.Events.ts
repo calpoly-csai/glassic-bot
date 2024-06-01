@@ -13,7 +13,7 @@ export default class TestEvents extends SubCommand {
 
     async Execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply({ ephemeral: false });
-        const events = await this.client.notionClient.getNotionEvents();
+        const events = await this.client.notionClient.getNotionMemberEvents();
         const embed = await notionEventsToDiscordEmbed(events);
         interaction.editReply({ embeds: [embed] })
     }

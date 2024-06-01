@@ -1,5 +1,3 @@
-import { isFullPage } from "@notionhq/client";
-import { PageObjectResponse, QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
 import { EmbedBuilder } from "discord.js";
 import { NotionEvent } from "../notion/NotionClient";
 
