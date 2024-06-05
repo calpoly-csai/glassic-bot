@@ -4,6 +4,14 @@ import { NotionEvent } from "../notion/NotionClient";
 const notionEventsToDiscordEmbed = async (events: NotionEvent[]) => {
     let embed = new EmbedBuilder().setColor("Blue");
 
+    if (!events.length) {
+        embed.addFields({
+            name: "No events found",
+            value: "No events found in the database",
+        })
+        return embed;
+    }
+
     events.forEach((e) => {
 
         let body = "";
