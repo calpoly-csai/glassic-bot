@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { NotionEvent } from "../notion/NotionClient";
+import EmbedEventListBuilder from "./EmbedEventListBuilder";
 
 const notionEventsToDiscordEmbed = async (events: NotionEvent[]) => {
     let embed = new EmbedBuilder().setColor("Blue");
@@ -12,31 +13,18 @@ const notionEventsToDiscordEmbed = async (events: NotionEvent[]) => {
         return embed;
     }
 
-    events.forEach((e) => {
+    let embedBuilder = new EmbedEventListBuilder()
+        .addEvents(events.map(e => ({
+            date: e.startDate,
+            topic: e.topic,
+            url: e.url,
+            eventBody: [
+                `${statusMsg(e.status)}`,
+                `${eplanMsg(e.eplan)}`,
+            ]
+        })))
 
-        let body = "";
-
-        let topic = e.topic;
-        body += `> [${topic || "?? Unknown topic"}](${e.url})\n`
-
-        body += `> ${statusMsg(e.status)}\n`
-        body += `> ${eplanMsg(e.eplan)}\n`
-
-        let dateString = e.startDate;
-        // todo catch poorly formatted dates
-        const date = new Date(Date.parse(dateString || "??"));
-
-        let title = ((date.toLocaleDateString("en-US", {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-        }) || "Unknown"))
-
-        embed.addFields({
-            name: title,
-            value: body,
-        })
-    })
+    embed.addFields(embedBuilder.build());
 
     return embed;
 }
