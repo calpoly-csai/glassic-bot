@@ -55,7 +55,7 @@ export default class EmbedEventListBuilder {
                 }) || "Unknown"))
 
                 let fieldBody = "";
-                fieldBody += `> [${e.topic || "?? Unknown topic"}](${e.url})\n`
+                fieldBody += `> [${e.topic || "Unknown topic"}](${e.url})\n`
                 e.eventBody.forEach((line) => {
                     fieldBody += `> ${line}\n`
                 })

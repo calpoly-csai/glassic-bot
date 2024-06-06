@@ -71,7 +71,7 @@ const getEplanCheckinJob = (client: DiscordClient) => async () => {
         let builder = new EmbedEventListBuilder()
             .addEvents(soonEvents.map((e) => ({
                 date: e.startDate,
-                topic: e.topic,
+                topic: e.notion_title,
                 url: e.url,
                 eventBody: [
                     `${eplanMsg(e.eplan)}`,

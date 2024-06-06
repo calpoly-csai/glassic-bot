@@ -16,7 +16,7 @@ const notionEventsToDiscordEmbed = async (events: NotionEvent[]) => {
     let embedBuilder = new EmbedEventListBuilder()
         .addEvents(events.map(e => ({
             date: e.startDate,
-            topic: e.topic,
+            topic: e.notion_title,
             url: e.url,
             eventBody: [
                 `${statusMsg(e.status)}`,

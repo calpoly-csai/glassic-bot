@@ -48,7 +48,7 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
     // iterate through the events and check if they have a notion id, log if they do/dont
     discordCurrentEventsRes.forEach((event) => {
         // check if this event has a notion page id
-        const possibleNotionId = event.description?.split("!@NotionId:")[1];
+        const possibleNotionId = event.description?.split("!@NotionId:")[1].split("_")[0];
         if (possibleNotionId && notionIdToDiscordId.has(possibleNotionId)) {
             // found a valid notion id for this discord event
             notionIdToDiscordId.set(possibleNotionId, event.id);
@@ -72,8 +72,8 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
             }
 
             let data = {
-                name: notionEvent.topic || "Unknown topic",
-                description: `!@NotionId:${notionEvent.id}`,
+                name: notionEvent.public_title || "Unknown topic",
+                description: `${notionEvent.public_description}\n\n_!@NotionId:${notionEvent.id}_`,
                 privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
                 entityType: GuildScheduledEventEntityType.External,
                 scheduledStartTime: Date.parse(notionEvent.startDate || ""),
@@ -89,13 +89,13 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
                 });
             if (!discordEventRes) continue;
             // successfully created the event!
-            logger.info(`Created event for Notion event "${notionEvent?.topic || "Unknown topic"}" (ID ${notionId})`);
+            logger.info(`Created event for Notion event "${notionEvent.public_title || "Unknown topic"}" (ID ${notionId})`);
             success_new++;
             notionIdToDiscordId.set(notionId, discordEventRes.id);
         } else {
             // event already exists, update it!
-            const NotionEvent = notionEvents.get(notionId);
-            if (!NotionEvent) {
+            const notionEvent = notionEvents.get(notionId);
+            if (!notionEvent) {
                 logger.warn("Notion event not found for Notion ID: " + notionId + ". Skipping.");
                 fail++;
                 continue;
@@ -110,14 +110,14 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
 
             // update the event
             let discordEditRes = await discordEvent.edit({
-                name: NotionEvent.topic || "Unknown topic",
-                description: `!@NotionId:${NotionEvent.id}`,
+                name: notionEvent.public_title || "Unknown topic",
+                description: `${notionEvent.public_description}\n\n_!@NotionId:${notionEvent.id}_`,
                 privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
                 entityType: GuildScheduledEventEntityType.External,
-                scheduledStartTime: Date.parse(NotionEvent.startDate || ""),
-                scheduledEndTime: Date.parse(NotionEvent.endDate || ""),
+                scheduledStartTime: Date.parse(notionEvent.startDate || ""),
+                scheduledEndTime: Date.parse(notionEvent.endDate || ""),
                 entityMetadata: {
-                    location: NotionEvent.location || "Unknown location",
+                    location: notionEvent.location || "Unknown location",
                 }
             })
                 .catch((err) => { logger.error("update an existing event on Discord", err) });
@@ -127,7 +127,7 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
             }
             // successfully updated the event!
             success_edit++;
-            logger.info(`Updated event for Notion event "${NotionEvent?.topic || "Unknown topic"}" (ID ${notionId})`);
+            logger.info(`Updated event for Notion event "${notionEvent?.public_title || "Unknown topic"}" (ID ${notionId})`);
         }
     }
     logger.info(`Created ${success_new} new events, updated ${success_edit} existing events. Couldn't sync ${fail} events.`)
