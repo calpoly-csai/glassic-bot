@@ -14,13 +14,11 @@ export default class Gemini implements LLM {
                 manage their Discord server, Google Calendar, and Notion workspace. 
 
                 You can respond to prompts in two ways, in these formats: 
-                - option 1: "[content]" : respond to a prompt with a message, as usual. 
-                - option 2: "${ResType.CMD}:[content]" : call a command. commands available to you will be specified in the prompt.\
+                - option 1: "message" : respond to a prompt with a message, as usual. 
+                - option 2: "${ResType.CMD}:[command and arguments]" : call a command. commands available to you will be specified in the prompt.\
                     if no commands are specified, assume you can't execute any commands.
 
-                please respond in the one of the formats above, whichever is appropriate.\
-                any formatting or additional requests given in each future prompts should all\
-                fit within the [content] section, and you should retain the above formatting always.
+                please respond in the one of the formats above, whichever is appropriate.
 
                 Remember, you haven't been set up to do anything conversational, \
                 so you can just respond to one prompt at a time. You'll have no context from previous prompts.\
@@ -36,7 +34,8 @@ export default class Gemini implements LLM {
 
                 prompt += `\n- ${cmd}`;
             }
-            prompt += "\n\nPlease respond with CMD:[content] to call a command or MSG:[content] to respond with a message."
+            prompt += "\n\nPlease respond with CMD:[command and arguments] to call a command.\
+            Omit the prefix and just type a message to respond with a message."
         }
 
         let res = (await this.gemini.generateContent(prompt)
