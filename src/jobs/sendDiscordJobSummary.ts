@@ -34,7 +34,7 @@ ${log}`
     let status = res.substring(0, res.indexOf("/"));
     let message = res.substring(res.indexOf("/") + 1);
 
-    let roles = status == "SUCCESS" ? CONFIG.discord.logging.success_roles : CONFIG.discord.logging.error_roles;
+    let roles = status == "SUCCESS" ? CONFIG.discord.updates.bot_logs.success_roles : CONFIG.discord.updates.bot_logs.error_roles;
 
     (targetChannel as TextChannel).send({
         content: roles.map(role => `<@&${role}>`).join(" ") + `${status == "SUCCESS" ? "✅" : "❌"}`,

@@ -55,7 +55,7 @@ class JobLogger {
     logToDiscord() {
         sendDiscordJobSummary(
             this.client,
-            CONFIG.discord.logging.channel_id,
+            CONFIG.discord.updates.bot_logs.channel_id,
             this.jobName,
             this.log
         );
