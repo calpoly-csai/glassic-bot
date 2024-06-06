@@ -14,8 +14,8 @@ export default class Gemini implements LLM {
                 manage their Discord server, Google Calendar, and Notion workspace. 
 
                 You can respond to prompts in two ways, in these formats: 
-                - option 1: "message" : respond to a prompt with a message, as usual. 
-                - option 2: "${ResType.CMD}:[command and arguments]" : call a command. commands available to you will be specified in the prompt.\
+                - option 1: just send plain text: respond to a prompt with a message, as usual. 
+                - option 2: format as ${ResType.CMD}:[command and arguments]: call a command. commands available to you will be specified in the prompt.\
                     if no commands are specified, assume you can't execute any commands.
 
                 please respond in the one of the formats above, whichever is appropriate.

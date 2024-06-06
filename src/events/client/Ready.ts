@@ -5,6 +5,7 @@ import Command from "../../base/classes/Command";
 import { RecurrenceRule, scheduleJob } from "node-schedule";
 import getMessageEventsJob from "../../jobs/sendMessageEventsJob";
 import getDiscordEventsJob from "../../jobs/syncDiscordEventsJob";
+import getEplanCheckinJob from "../../jobs/sendEplanCheckin";
 
 export default class Ready extends Event {
     constructor(client: DiscordClient) {
@@ -57,6 +58,8 @@ export default class Ready extends Event {
         scheduleJob(rule, getDiscordEventsJob(this.client));
         console.log("Successfully set up interval sync.")
 
+        scheduleJob(rule, getEplanCheckinJob(this.client));
+        console.log("Successfully set up e-plan updates.")
     }
 
 
