@@ -31,8 +31,8 @@ class JobLogger {
         this.log += msg + "\n";
     }
 
-    error(attemptedThing: string, error: any) {
-        const msg = `[${this.jobName} - ERROR] When attempting to ${attemptedThing}:`;
+    error(attemptingTo: string, error: any) {
+        const msg = `[${this.jobName} - ERROR] When attempting to ${attemptingTo}:`;
         console.error(msg);
         console.error(JSON.stringify(error, null, 2))
         this.log += msg + "\n" + JSON.stringify(error, null, 2) + "\n";
