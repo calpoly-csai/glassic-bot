@@ -39,7 +39,6 @@ export default class DiscordClient extends Client implements ICustomClient {
 
 
         console.log("Registering commands with app token")
-        console.log(process.env.DISCORD_APP_TOKEN!)
 
         this.login(process.env.DISCORD_APP_TOKEN)
             .catch(err => console.error(err));

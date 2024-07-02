@@ -1,7 +1,7 @@
 import { Collection, Events, REST, Routes } from "discord.js";
-import DiscordClient from "../../base/classes/DiscordClient";
-import Event from "../../base/classes/Event";
-import Command from "../../base/classes/Command";
+import DiscordClient from "../../classes/DiscordClient";
+import Event from "../../classes/Event";
+import Command from "../../classes/Command";
 import { RecurrenceRule, scheduleJob } from "node-schedule";
 import getMessageEventsJob from "../../jobs/sendMessageEventsJob";
 import getDiscordEventsJob from "../../jobs/syncDiscordEventsJob";

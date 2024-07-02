@@ -1,6 +1,6 @@
 import { TextChannel } from "discord.js";
-import { CONFIG } from "..";
-import DiscordClient from "../base/classes/DiscordClient";
+import { CONFIG } from "../..";
+import DiscordClient from "../classes/DiscordClient";
 
 const sendDiscordJobSummary = async (client: DiscordClient, channelId: string, situationName: string, log: string) => {
     var targetChannel = client.channels.cache.find(channel => channel.id === channelId)!;

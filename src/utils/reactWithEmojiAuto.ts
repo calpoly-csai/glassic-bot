@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import DiscordClient from "../base/classes/DiscordClient";
+import DiscordClient from "../discord/classes/DiscordClient";
 
 /**
  * Automatically react to a Discord message with 3 relevant emoji.

@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import DiscordClient from "../base/classes/DiscordClient";
-import SubCommand from "../base/classes/SubCommand";
+import DiscordClient from "../classes/DiscordClient";
+import SubCommand from "../classes/SubCommand";
 
 export default class TestTwo extends SubCommand {
     constructor(client: DiscordClient) {

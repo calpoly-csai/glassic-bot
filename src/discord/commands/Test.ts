@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType, CacheType, ChatInputCommandInteraction, PermissionFlagsBits, PermissionsBitField } from "discord.js";
-import Command from "../base/classes/Command";
-import DiscordClient from "../base/classes/DiscordClient";
-import Category from "../base/enums/Category";
+import Command from "../classes/Command";
+import DiscordClient from "../classes/DiscordClient";
+import Category from "../enums/Category";
 
 export default class Test extends Command {
     constructor(client: DiscordClient) {

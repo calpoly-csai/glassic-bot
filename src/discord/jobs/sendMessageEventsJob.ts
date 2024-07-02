@@ -1,6 +1,6 @@
 import { TextChannel } from "discord.js";
-import notionEventsToDiscordEmbed from "../utils/notionEventsToDiscordEmbed";
-import DiscordClient from "../base/classes/DiscordClient";
+import notionEventsToDiscordEmbed from "../../utils/notionEventsToDiscordEmbed";
+import DiscordClient from "../classes/DiscordClient";
 import JobLogger from "./JobLogger";
 
 const getMessageEventsJob = (client: DiscordClient, channelId: string) => async () => {

@@ -1,9 +1,9 @@
 import { Events, Message } from "discord.js";
-import Event from "../../base/classes/Event";
-import DiscordClient from "../../base/classes/DiscordClient";
-import notionEventsToDiscordEmbed from "../../utils/notionEventsToDiscordEmbed";
-import { reactWithEmojiAuto } from "../../utils/reactWithEmojiAuto";
-import { CONFIG } from "../..";
+import Event from "../../classes/Event";
+import DiscordClient from "../../classes/DiscordClient";
+import notionEventsToDiscordEmbed from "../../../utils/notionEventsToDiscordEmbed";
+import { reactWithEmojiAuto } from "../../../utils/reactWithEmojiAuto";
+import { CONFIG } from "../../..";
 
 export default class MessageHandler extends Event {
     autoReactChannels: Set<string>;

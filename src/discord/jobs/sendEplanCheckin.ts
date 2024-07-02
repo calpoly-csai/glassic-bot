@@ -1,9 +1,9 @@
 import { EmbedBuilder, TextChannel } from "discord.js";
-import DiscordClient from "../base/classes/DiscordClient";
-import { NotionEvent } from "../notion/NotionClient";
+import DiscordClient from "../classes/DiscordClient";
+import { NotionEvent } from "../../notion/NotionClient";
 import JobLogger from "./JobLogger";
-import EmbedEventListBuilder from "../utils/EmbedEventListBuilder";
-import { CONFIG } from "..";
+import EmbedEventListBuilder from "../../utils/EmbedEventListBuilder";
+import { CONFIG } from "../..";
 
 const getEplanCheckinJob = (client: DiscordClient) => async () => {
     const logger = new JobLogger("Send Eplan Checkin", client);

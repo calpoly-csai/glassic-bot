@@ -1,8 +1,8 @@
-import DiscordClient from "./base/classes/DiscordClient";
+import DiscordClient from "./discord/classes/DiscordClient";
 import * as dotenv from "dotenv";
 import NotionClient from "./notion/NotionClient";
 import Gemini from "./llm/Gemini";
-import { IConfig } from "./base/interfaces/IConfig";
+import { IConfig } from "./discord/interfaces/IConfig";
 
 dotenv.config();
 

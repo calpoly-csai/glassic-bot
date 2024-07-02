@@ -1,6 +1,6 @@
 import { GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildScheduledEventStatus } from "discord.js";
-import DiscordClient from "../base/classes/DiscordClient";
-import { NotionEvent } from "../notion/NotionClient";
+import DiscordClient from "../classes/DiscordClient";
+import { NotionEvent } from "../../notion/NotionClient";
 import JobLogger from "./JobLogger";
 
 const getDiscordEventsJob = (client: DiscordClient) => async () => {

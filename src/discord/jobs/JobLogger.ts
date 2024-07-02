@@ -1,5 +1,5 @@
-import { CONFIG } from "..";
-import DiscordClient from "../base/classes/DiscordClient";
+import { CONFIG } from "../..";
+import DiscordClient from "../classes/DiscordClient";
 import sendDiscordJobSummary from "./sendDiscordJobSummary";
 
 class JobLogger {

@@ -1,8 +1,8 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
-import DiscordClient from "../base/classes/DiscordClient";
-import SubCommand from "../base/classes/SubCommand";
 import { isFullPage, isFullPageOrDatabase } from "@notionhq/client";
-import notionEventsToDiscordEmbed from "../utils/notionEventsToDiscordEmbed";
+import notionEventsToDiscordEmbed from "../../utils/notionEventsToDiscordEmbed";
+import DiscordClient from "../classes/DiscordClient";
+import SubCommand from "../classes/SubCommand";
 
 export default class TestEvents extends SubCommand {
     constructor(client: DiscordClient) {
