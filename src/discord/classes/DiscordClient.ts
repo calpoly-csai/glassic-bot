@@ -6,12 +6,14 @@ import SubCommand from "./SubCommand";
 import NotionClient from "../../notion/NotionClient";
 import LLM from "../../llm/LLM";
 import Logger from "../../utils/Logger";
+import MessageHandler from "../events/guild/MessageHandler";
 
 export default class DiscordClient extends Client implements ICustomClient {
     handler: Handler;
     commands: Collection<string, Command>;
     subCommands: Collection<string, SubCommand>;
     cooldowns: Collection<string, Collection<string, number>>;
+    messageHandler: MessageHandler | null;
 
     notionClient: NotionClient;
     llm: LLM;
@@ -31,6 +33,7 @@ export default class DiscordClient extends Client implements ICustomClient {
         this.subCommands = new Collection();
         this.cooldowns = new Collection();
 
+        this.messageHandler = null;
         this.notionClient = notionClient;
         this.llm = llm;
     }

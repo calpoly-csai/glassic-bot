@@ -16,5 +16,9 @@ export default class Event implements IEvent {
         this.once = options.once;
     }
 
+    setMessageHandler(handler: any) {
+        this.client.messageHandler = handler;
+    }
+
     Execute(...args: any): void { };
 }
