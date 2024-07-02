@@ -1,12 +1,24 @@
 import { TextChannel } from "discord.js";
 import notionEventsToDiscordEmbed from "../../utils/notionEventsToDiscordEmbed";
 import DiscordClient from "../classes/DiscordClient";
-import JobLogger from "./JobLogger";
+import Logger from "../../utils/Logger";
+import sendDiscordJobSummary from "./sendDiscordJobSummary";
+import { CONFIG } from "../..";
+
+const NAME = "Send Weekly Events Message";
 
 const getMessageEventsJob = (client: DiscordClient, channelId: string) => async () => {
-    var targetChannel = client.channels.cache.find(channel => channel.id === channelId)!;
-    var log = new JobLogger("Send Weekly Events Message", client);
 
+    const whenDone = (log: string, success: boolean) =>
+        sendDiscordJobSummary(
+            client,
+            CONFIG.discord.updates.bot_logs.channel_id,
+            NAME,
+            log
+        );
+    var log = new Logger(NAME, client, whenDone);
+
+    var targetChannel = client.channels.cache.find(channel => channel.id === channelId)!;
     if (!(targetChannel instanceof TextChannel)) {
         log.fail("The specified channel is not a text channel. Check the channel ID in the config/.env file.");
         return;

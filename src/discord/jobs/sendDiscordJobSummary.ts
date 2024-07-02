@@ -1,8 +1,14 @@
 import { TextChannel } from "discord.js";
 import { CONFIG } from "../..";
 import DiscordClient from "../classes/DiscordClient";
+import Logger from "../../utils/Logger";
 
-const sendDiscordJobSummary = async (client: DiscordClient, channelId: string, situationName: string, log: string) => {
+const sendDiscordJobSummary = async (
+    client: DiscordClient,
+    channelId: string,
+    situationName: string,
+    log: string
+) => {
     var targetChannel = client.channels.cache.find(channel => channel.id === channelId)!;
 
     if (!targetChannel) {
@@ -44,9 +50,11 @@ ${log}`
             fields: []
         }]
     })
-        .catch((err) => { console.error(`[Send Discord Log Message] Error sending message to Discord:\n`, JSON.stringify(err, null, 2)); });
+        .catch((err) => {
+            Logger.once("Send Discord Log Message", "Error sending message to Discord:\n" + JSON.stringify(err, null, 2));
+        });
 
-    console.log(message);
+    Logger.once("Send Discord Log Message", "sent message:\n" + message);
 }
 
 export default sendDiscordJobSummary;

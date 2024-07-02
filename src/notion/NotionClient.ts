@@ -1,6 +1,7 @@
 import { Client, isFullPage } from "@notionhq/client";
 import { CONFIG } from "..";
 import NotionFilters, { NotionColumns } from "./NotionFilters";
+import Logger from "../utils/Logger";
 
 export default class NotionClient extends Client {
     constructor() {
@@ -24,7 +25,7 @@ export default class NotionClient extends Client {
         return info.results.reduce(
             (accumulator, current) => {
                 if (isFullPage(current)) {
-                    console.log(JSON.stringify(current, null, 2));
+                    Logger.once("util: getNotionMemberEvents", JSON.stringify(current, null, 2));
                     if (current.properties.Publish.type == "status"
                         && current.properties.Publish.status?.name == NotionColumns.publish.val_no_details) {
                         // publish without details

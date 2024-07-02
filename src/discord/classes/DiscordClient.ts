@@ -5,6 +5,7 @@ import Command from "./Command";
 import SubCommand from "./SubCommand";
 import NotionClient from "../../notion/NotionClient";
 import LLM from "../../llm/LLM";
+import Logger from "../../utils/Logger";
 
 export default class DiscordClient extends Client implements ICustomClient {
     handler: Handler;
@@ -36,10 +37,7 @@ export default class DiscordClient extends Client implements ICustomClient {
 
     Init(): void {
         this.LoadHandlers();
-
-
-        console.log("Registering commands with app token")
-
+        Logger.once("setup", "logging in");
         this.login(process.env.DISCORD_APP_TOKEN)
             .catch(err => console.error(err));
     }

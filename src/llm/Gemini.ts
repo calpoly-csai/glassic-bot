@@ -1,6 +1,7 @@
 import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
 import LLM from "./LLM";
 import { InteractionReplyOptions, MessagePayload } from "discord.js";
+import Logger from "../utils/Logger";
 
 export default class Gemini implements LLM {
     gemini: GenerativeModel;
@@ -39,11 +40,11 @@ export default class Gemini implements LLM {
         }
 
         let res = (await this.gemini.generateContent(prompt)
-            .catch((err) => console.log("[Gemini - ERROR]", JSON.stringify(err, null, 2))))
+            .catch((err) => Logger.once("Gemini", "ERROR:\n" + JSON.stringify(err, null, 2))))
         if (!res) return;
 
         let content = res.response.text().trim();
-        console.log("[Gemini]", content);
+        Logger.once("Gemini", content);
 
         if (content.startsWith(ResType.CMD)) {
             if (!cmds) return "You prompted me to execute a command, I don't have any commands to execute for this message.";

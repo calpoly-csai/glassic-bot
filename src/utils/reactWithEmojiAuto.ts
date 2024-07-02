@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
 import DiscordClient from "../discord/classes/DiscordClient";
+import Logger from "./Logger";
 
 /**
  * Automatically react to a Discord message with 3 relevant emoji.
@@ -13,7 +14,7 @@ export const reactWithEmojiAuto = async (client: DiscordClient, message: Message
     Message: " + message.content);
     if (res) {
         const emojis = res.trim().split(",");
-        console.log("[AutoReact] Reacting to message with emojis: ", emojis);
+        Logger.once("AutoReact", "Reacting to message with emojis: " + emojis);
         emojis.forEach((emoji) => {
             message.react(emoji)
                 .catch((err) => {

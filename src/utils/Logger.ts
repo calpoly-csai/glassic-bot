@@ -1,20 +1,25 @@
-import { CONFIG } from "../..";
-import DiscordClient from "../classes/DiscordClient";
-import sendDiscordJobSummary from "./sendDiscordJobSummary";
+import DiscordClient from "../discord/classes/DiscordClient";
 
-class JobLogger {
+class Logger {
+
+    static once = (prefix: string, msg: string) => {
+        console.log(`[${prefix}] ${msg}`)
+    }
+
     jobName: string;
     client: DiscordClient;
+    onFinish: (fullLog: string, failed: boolean) => any;
     log = "";
 
-    constructor(jobName: string, client: DiscordClient) {
+    constructor(jobName: string, client: DiscordClient, onFinish: (fullLog: string, failed: boolean) => any) {
         this.jobName = jobName;
         this.client = client;
+        this.onFinish = onFinish;
         this.log = "";
     }
 
     start() {
-        const msg = `[${this.jobName}] Starting job...`;
+        const msg = `[${this.jobName}] Starting...`;
         console.log(msg);
         this.log += msg + "\n";
     }
@@ -42,25 +47,16 @@ class JobLogger {
         const msg = `[${this.jobName} - FAIL] ${message}`;
         console.error(msg);
         this.log += msg + "\n";
-        this.logToDiscord();
+        this.onFinish(this.log, true);
     }
 
     end() {
-        const msg = `[${this.jobName}] Job completed.`;
+        const msg = `[${this.jobName}] Completed.`;
         console.log(msg);
         this.log += msg + "\n";
-        this.logToDiscord();
-    }
-
-    logToDiscord() {
-        sendDiscordJobSummary(
-            this.client,
-            CONFIG.discord.updates.bot_logs.channel_id,
-            this.jobName,
-            this.log
-        );
+        this.onFinish(this.log, false);
     }
 }
 
-export default JobLogger;
+export default Logger;
 

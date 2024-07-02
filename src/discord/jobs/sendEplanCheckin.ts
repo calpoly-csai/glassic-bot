@@ -1,12 +1,23 @@
 import { EmbedBuilder, TextChannel } from "discord.js";
 import DiscordClient from "../classes/DiscordClient";
 import { NotionEvent } from "../../notion/NotionClient";
-import JobLogger from "./JobLogger";
+import Logger from "../../utils/Logger";
 import EmbedEventListBuilder from "../../utils/EmbedEventListBuilder";
 import { CONFIG } from "../..";
+import sendDiscordJobSummary from "./sendDiscordJobSummary";
+
+const NAME = "Send Eplan Checkin";
 
 const getEplanCheckinJob = (client: DiscordClient) => async () => {
-    const logger = new JobLogger("Send Eplan Checkin", client);
+    const whenDone = (log: string, success: boolean) =>
+        sendDiscordJobSummary(
+            client,
+            CONFIG.discord.updates.bot_logs.channel_id,
+            NAME,
+            log
+        );
+
+    const logger = new Logger(NAME, client, whenDone);
     logger.start();
 
     // const notionEvents = new Map<string, NotionEvent>();

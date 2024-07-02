@@ -4,6 +4,7 @@ import DiscordClient from "../../classes/DiscordClient";
 import notionEventsToDiscordEmbed from "../../../utils/notionEventsToDiscordEmbed";
 import { reactWithEmojiAuto } from "../../../utils/reactWithEmojiAuto";
 import { CONFIG } from "../../..";
+import Logger from "../../../utils/Logger";
 
 export default class MessageHandler extends Event {
     autoReactChannels: Set<string>;
@@ -13,10 +14,10 @@ export default class MessageHandler extends Event {
             description: "Message handler event.",
             once: false,
         })
-        console.log("created message handler.")
+        Logger.once("messageHandler setup", "created message handler.");
 
         this.autoReactChannels = new Set(CONFIG.discord.auto_reaction_channel_ids)
-        console.log("autoReactChannels: ", this.autoReactChannels)
+        Logger.once("messageHandler setup", "autoReactChannels: " + [...this.autoReactChannels]);
     }
 
     async Execute(msg: Message) {

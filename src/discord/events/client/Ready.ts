@@ -6,6 +6,7 @@ import { RecurrenceRule, scheduleJob } from "node-schedule";
 import getMessageEventsJob from "../../jobs/sendMessageEventsJob";
 import getDiscordEventsJob from "../../jobs/syncDiscordEventsJob";
 import getEplanCheckinJob from "../../jobs/sendEplanCheckin";
+import Logger from "../../../utils/Logger";
 
 export default class Ready extends Event {
     constructor(client: DiscordClient) {
@@ -18,7 +19,7 @@ export default class Ready extends Event {
     }
 
     async Execute() {
-        console.log(`${this.client.user?.tag} is ready!`);
+        Logger.once("setup", "Client is ready.")
 
         if (!this.verifySecrets()) return;
 
@@ -39,7 +40,7 @@ export default class Ready extends Event {
         }).catch((err) => {
             console.error("Error setting commands: ", err);
         })
-        console.log(`Successfully registered ${setCommands.length} commands.`)
+        Logger.once("setup", `Successfully registered ${setCommands.length} commands.`)
     }
 
     /**
@@ -53,13 +54,13 @@ export default class Ready extends Event {
         rule.tz = "America/Los_Angeles";
 
         scheduleJob(rule, getMessageEventsJob(this.client, "1241586080743030878"));
-        console.log("Successfully set up interval message.")
+        Logger.once("setup", "Successfully set up interval message.")
 
         scheduleJob(rule, getDiscordEventsJob(this.client));
-        console.log("Successfully set up interval sync.")
+        Logger.once("setup", "Successfully set up interval sync.")
 
         scheduleJob(rule, getEplanCheckinJob(this.client));
-        console.log("Successfully set up e-plan updates.")
+        Logger.once("setup", "Successfully set up e-plan updates.")
     }
 
 
