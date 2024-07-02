@@ -110,11 +110,14 @@ const getEplanCheckinJob = (client: DiscordClient) => async () => {
         return;
     }
 
-    (targetChannel as TextChannel).send({
-        content: msgContent,
-        embeds: [embed]
-    })
-        .catch((err) => { logger.error("send message to Discord", err) });
+    client.sendMessage(
+        CONFIG.discord.updates.eplans.channel_id,
+        {
+            content: msgContent,
+            embeds: [embed]
+        },
+        logger
+    );
 
     logger.info("Successfully sent eplan checkin message to Discord.");
     logger.end();

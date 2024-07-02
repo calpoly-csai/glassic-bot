@@ -42,18 +42,17 @@ ${log}`
 
     let roles = status == "SUCCESS" ? CONFIG.discord.updates.bot_logs.success_roles : CONFIG.discord.updates.bot_logs.error_roles;
 
-    (targetChannel as TextChannel).send({
-        content: roles.map(role => `<@&${role}>`).join(" ") + `${status == "SUCCESS" ? "✅" : "❌"}`,
-        embeds: [{
-            title: `Report for ${situationName}`,
-            description: message,
-            fields: []
-        }]
-    })
-        .catch((err) => {
-            Logger.once("Send Discord Log Message", "Error sending message to Discord:\n" + JSON.stringify(err, null, 2));
-        });
-
+    client.sendMessage(
+        channelId,
+        {
+            content: roles.map(role => `<@&${role}>`).join(" ") + `${status == "SUCCESS" ? "✅" : "❌"}`,
+            embeds: [{
+                title: `Report for ${situationName}`,
+                description: message,
+                fields: []
+            }]
+        },
+    );
     Logger.once("Send Discord Log Message", "sent message:\n" + message);
 }
 

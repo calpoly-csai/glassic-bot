@@ -18,11 +18,11 @@ const getMessageEventsJob = (client: DiscordClient, channelId: string) => async 
         );
     var log = new Logger(NAME, client, whenDone);
 
-    var targetChannel = client.channels.cache.find(channel => channel.id === channelId)!;
-    if (!(targetChannel instanceof TextChannel)) {
-        log.fail("The specified channel is not a text channel. Check the channel ID in the config/.env file.");
-        return;
-    }
+    // var targetChannel = client.channels.cache.find(channel => channel.id === channelId)!;
+    // if (!(targetChannel instanceof TextChannel)) {
+    //     log.fail("The specified channel is not a text channel. Check the channel ID in the config/.env file.");
+    //     return;
+    // }
 
     // get the events from Notion and paraphrase the message
     let doubleRes = await Promise.all([
@@ -40,12 +40,11 @@ const getMessageEventsJob = (client: DiscordClient, channelId: string) => async 
     }
 
     // send the message to the channel
-    let sendRes = await targetChannel.send({ content: content, embeds: [embed] })
-        .catch((err) => { log.error("send a message to Discord", err); });
-    if (!sendRes) {
-        log.fail("Failed to send message to Discord.");
-        return;
-    };
+    client.sendMessage(
+        channelId,
+        { content: content, embeds: [embed] },
+        log
+    );
 
     // done
     log.info("Sent message.");

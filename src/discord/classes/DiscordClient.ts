@@ -1,4 +1,4 @@
-import { Client, Collection, GatewayIntentBits } from "discord.js";
+import { Client, Collection, GatewayIntentBits, MessageCreateOptions, MessagePayload, TextChannel } from "discord.js";
 import ICustomClient from "../interfaces/ICustomClient";
 import Handler from "./Handler";
 import Command from "./Command";
@@ -48,5 +48,41 @@ export default class DiscordClient extends Client implements ICustomClient {
     LoadHandlers(): void {
         this.handler.LoadEvents();
         this.handler.LoadCommands();
+    }
+
+    sendMessage = async (channelId: string,
+        options: string | MessagePayload | MessageCreateOptions,
+        logger?: Logger
+    ) => {
+        const targetChannel = await this.channels.fetch(channelId);
+        if (!targetChannel) {
+            if (logger) {
+                logger.error("send discord message", `Could not find channel with ID ${channelId}.`);
+            } else {
+                Logger.once("send discord message", `Could send message: could not find channel with ID ${channelId}.`);
+            }
+            return null;
+        } if (!(targetChannel instanceof TextChannel)) {
+            if (logger) {
+                logger.error("send discord message", "The specified channel is not a text channel. Check the channel ID in the config/.env file?");
+            } else {
+                Logger.once("send discord message", "Could not send message: the specified channel is not a text channel. Check the channel ID in the config/.env file?");
+            }
+            return null;
+        }
+
+        const res = await (targetChannel as TextChannel).send(options)
+            .catch((err) => {
+                if (logger) {
+                    logger.error("send discord message", `Error sending message to Discord:\n${JSON.stringify(err, null, 2)}`);
+                } else {
+                    Logger.once("send discord message", `Error sending message to Discord:\n${JSON.stringify(err, null, 2)}`);
+                }
+            });
+        if (!res) {
+            return null;
+        } else {
+            return res;
+        }
     }
 }

@@ -7,7 +7,6 @@ import getMessageEventsJob from "../../jobs/sendMessageEventsJob";
 import getDiscordEventsJob from "../../jobs/syncDiscordEventsJob";
 import getEplanCheckinJob from "../../jobs/sendEplanCheckin";
 import Logger from "../../../utils/Logger";
-import { CONFIG } from "../../..";
 
 export default class Ready extends Event {
     constructor(client: DiscordClient) {
