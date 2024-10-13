@@ -36,26 +36,23 @@ export default class MessageHandler extends Event {
             // ensure the author is not a bot, react if no
             reactWithEmojiAuto(this.client, msg);
         }
-
     }
 
     /**
      * add a listener for replies to a message
      * @param msgId the message ID to listen for replies to
-     * @param listener the function to execute when a reply is received
+     * @param listener the function to execute when a reply is received; return if the listener should be removed
      * @param timeout when to stop listening for replies
-     * @param repeatUntilTimeout if true, will execute the listener every time a reply is received until the timeout
      */
     addListener(
         msgId: string,
-        listener: (msg: Message) => any,
-        timeout: number = 60000,
-        repeatUntilTimeout: boolean = false
+        listener: (msg: Message) => Promise<boolean> | boolean,
+        timeout: number = 43200000, // default 12 hour timeout
     ) {
         this.listeners.set(msgId,
             async (msg: Message) => {
-                listener(msg);
-                if (!repeatUntilTimeout) {
+                let remove = await listener(msg);
+                if (remove) {
                     this.listeners.delete(msgId);
                 }
             }

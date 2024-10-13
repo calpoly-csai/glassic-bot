@@ -4,6 +4,7 @@ class Logger {
 
     static once = (prefix: string, msg: string) => {
         console.log(`[${prefix}] ${msg}`)
+        return;
     }
 
     jobName: string;

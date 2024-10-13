@@ -1,4 +1,4 @@
-import { Client, Collection, GatewayIntentBits, MessageCreateOptions, MessagePayload, TextChannel } from "discord.js";
+import { Client, Collection, Events, GatewayIntentBits, MessageCreateOptions, MessagePayload, TextChannel } from "discord.js";
 import ICustomClient from "../interfaces/ICustomClient";
 import Handler from "./Handler";
 import Command from "./Command";
@@ -7,6 +7,7 @@ import NotionClient from "../../notion/NotionClient";
 import LLM from "../../llm/LLM";
 import Logger from "../../utils/Logger";
 import MessageHandler from "../events/guild/MessageHandler";
+import ReactionHandler from "../events/guild/ReactionHandler";
 
 export default class DiscordClient extends Client implements ICustomClient {
     handler: Handler;
@@ -14,6 +15,7 @@ export default class DiscordClient extends Client implements ICustomClient {
     subCommands: Collection<string, SubCommand>;
     cooldowns: Collection<string, Collection<string, number>>;
     messageHandler: MessageHandler | null;
+    reactionHandler: ReactionHandler | null;
 
     notionClient: NotionClient;
     llm: LLM;
@@ -34,6 +36,7 @@ export default class DiscordClient extends Client implements ICustomClient {
         this.cooldowns = new Collection();
 
         this.messageHandler = null;
+        this.reactionHandler = null;
         this.notionClient = notionClient;
         this.llm = llm;
     }
@@ -50,39 +53,62 @@ export default class DiscordClient extends Client implements ICustomClient {
         this.handler.LoadCommands();
     }
 
-    sendMessage = async (channelId: string,
-        options: string | MessagePayload | MessageCreateOptions,
-        logger?: Logger
+    sendMessage = async (
+        channelId: string,
+        discordOptions: string | MessagePayload | MessageCreateOptions,
+        logger?: Logger,
+        reactionCallbacks?: Map<string, ReactionCallbackInfo>
     ) => {
         const targetChannel = await this.channels.fetch(channelId);
+        const logError = logger ? logger.error : Logger.once;
+        const logInfo = (a: string, b: string) => logger ? logger.info(b) : Logger.once(a, b);
+
+        console.log("trying to log with", typeof logger, logger?.jobName);
+
         if (!targetChannel) {
-            if (logger) {
-                logger.error("send discord message", `Could not find channel with ID ${channelId}.`);
-            } else {
-                Logger.once("send discord message", `Could send message: could not find channel with ID ${channelId}.`);
-            }
+            logError("send discord message", `Could not find channel with ID ${channelId}.`);
             return null;
         } if (!(targetChannel instanceof TextChannel)) {
-            if (logger) {
-                logger.error("send discord message", "The specified channel is not a text channel. Check the channel ID in the config/.env file?");
-            } else {
-                Logger.once("send discord message", "Could not send message: the specified channel is not a text channel. Check the channel ID in the config/.env file?");
-            }
+            logError("send discord message", `The specified channel  ${channelId} is not a text channel. Check the channel ID in the config/.env file?`);
             return null;
         }
 
-        const res = await (targetChannel as TextChannel).send(options)
+        const res = await (targetChannel as TextChannel).send(discordOptions)
             .catch((err) => {
-                if (logger) {
-                    logger.error("send discord message", `Error sending message to Discord:\n${JSON.stringify(err, null, 2)}`);
-                } else {
-                    Logger.once("send discord message", `Error sending message to Discord:\n${JSON.stringify(err, null, 2)}`);
-                }
+                logError("send discord message", err)
             });
         if (!res) {
+            // error sending discord message
             return null;
-        } else {
-            return res;
         }
+
+        if (reactionCallbacks) {
+            reactionCallbacks.forEach((callbackInfo, emoji) => {
+                if (!this.reactionHandler) {
+                    logError("setup msg reaction action", "No message handler found to listen for reactions.");
+                    return res;
+                }
+
+                this.reactionHandler.addListener(
+                    res.id,
+                    callbackInfo.onReact,
+                    callbackInfo.timeout,
+                );
+
+                if (callbackInfo.autoReact) {
+                    res.react(emoji);
+                }
+            })
+        }
+
+        logInfo("send discord message", "Successfully sent message to Discord.");
+
+        return res;
     }
+}
+
+type ReactionCallbackInfo = {
+    onReact: () => boolean;
+    autoReact: boolean;
+    timeout?: number;
 }

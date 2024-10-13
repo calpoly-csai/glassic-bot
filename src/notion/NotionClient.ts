@@ -52,8 +52,8 @@ export default class NotionClient extends Client {
                             status: (current.properties.Status.type == "status" && current.properties.Status.status?.name) || "",
                             url: current.url,
                             location: (current.properties.Location.type == "select" && current.properties.Location.select?.name) || "",
-                            public_description: (current.properties["GCAL-Description"].type == "rich_text" && current.properties["GCAL-Description"].rich_text[0]?.plain_text) || "",
-                            public_title: (current.properties["GCAL-Name"].type == "rich_text" && current.properties["GCAL-Name"].rich_text[0]?.plain_text) || "",
+                            public_description: (current.properties["PUB-Description"].type == "rich_text" && current.properties["PUB-Description"].rich_text[0]?.plain_text) || "",
+                            public_title: (current.properties["PUB-Name"].type == "rich_text" && current.properties["PUB-Name"].rich_text[0]?.plain_text) || "",
                         })
                     }
 

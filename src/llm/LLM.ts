@@ -1,5 +1,3 @@
-import { InteractionReplyOptions, MessagePayload } from "discord.js";
-
 
 export default interface LLM {
 

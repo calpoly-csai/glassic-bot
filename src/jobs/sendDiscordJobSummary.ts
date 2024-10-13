@@ -1,7 +1,6 @@
-import { TextChannel } from "discord.js";
-import { CONFIG } from "../..";
-import DiscordClient from "../classes/DiscordClient";
-import Logger from "../../utils/Logger";
+import { CONFIG } from "..";
+import DiscordClient from "../discord/classes/DiscordClient";
+import Logger from "../utils/Logger";
 
 const sendDiscordJobSummary = async (
     client: DiscordClient,
@@ -17,7 +16,7 @@ const sendDiscordJobSummary = async (
     }
 
     const res = await client.llm.prompt(
-        `Below are the logs of a job that you just ran. Please review the logs and respond in the following format:
+        `Below are the logs of a job that was just ran. Please review the logs and respond in the following format:
 
 Option 1: "SUCCESS/[MSG]" - respond this way if there were no errors.
 Option 2: "FAIL/[MSG]" - respond this way if there were errors. 
@@ -40,8 +39,9 @@ ${log}`
     let status = res.substring(0, res.indexOf("/"));
     let message = res.substring(res.indexOf("/") + 1);
 
-    let roles = status == "SUCCESS" ? CONFIG.discord.updates.bot_logs.success_roles : CONFIG.discord.updates.bot_logs.error_roles;
+    let roles = status == "SUCCESS" ? CONFIG.discord.logs.success_roles : CONFIG.discord.logs.error_roles;
 
+    console.log("------ sending final msg")
     client.sendMessage(
         channelId,
         {

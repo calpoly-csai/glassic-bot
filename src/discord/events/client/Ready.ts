@@ -3,9 +3,7 @@ import DiscordClient from "../../classes/DiscordClient";
 import Event from "../../classes/Event";
 import Command from "../../classes/Command";
 import { RecurrenceRule, scheduleJob } from "node-schedule";
-import getMessageEventsJob from "../../jobs/sendMessageEventsJob";
-import getDiscordEventsJob from "../../jobs/syncDiscordEventsJob";
-import getEplanCheckinJob from "../../jobs/sendEplanCheckin";
+import getDiscordEventsJob from "../../../jobs/syncDiscordEventsJob";
 import Logger from "../../../utils/Logger";
 
 export default class Ready extends Event {
@@ -53,14 +51,9 @@ export default class Ready extends Event {
         rule.hour = 8;
         rule.tz = "America/Los_Angeles";
 
-        scheduleJob(rule, getMessageEventsJob(this.client, "1241586080743030878"));
-        Logger.once("setup", "Successfully set up interval message.")
 
         scheduleJob(rule, getDiscordEventsJob(this.client));
         Logger.once("setup", "Successfully set up interval sync.")
-
-        scheduleJob(rule, getEplanCheckinJob(this.client));
-        Logger.once("setup", "Successfully set up e-plan updates.")
     }
 
 

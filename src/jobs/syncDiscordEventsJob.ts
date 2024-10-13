@@ -1,9 +1,9 @@
 import { GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildScheduledEventStatus } from "discord.js";
-import DiscordClient from "../classes/DiscordClient";
-import { NotionEvent } from "../../notion/NotionClient";
-import Logger from "../../utils/Logger";
+import DiscordClient from "../discord/classes/DiscordClient";
+import { NotionEvent } from "../notion/NotionClient";
+import Logger from "../utils/Logger";
 import sendDiscordJobSummary from "./sendDiscordJobSummary";
-import { CONFIG } from "../..";
+import { CONFIG } from "..";
 
 const NAME = "Sync Discord Events";
 
@@ -12,7 +12,7 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
     const whenDone = (log: string, success: boolean) =>
         sendDiscordJobSummary(
             client,
-            CONFIG.discord.updates.bot_logs.channel_id,
+            CONFIG.discord.logs.channel_id,
             NAME,
             log
         );
