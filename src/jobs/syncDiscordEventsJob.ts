@@ -31,7 +31,7 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
     // list of the names of discord events that aren't from Notion (or invalid id)
     const discordWithoutNotion = [];
 
-    const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID!);
+    const guild = client.guilds.cache.get(CONFIG.discord.server_id!);
 
     if (!guild) {
         logger.fail("Failed to fetch guild - guild with provided ID not found?.");

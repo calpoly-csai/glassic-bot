@@ -86,7 +86,7 @@ export default class Ready extends Event {
             return false;
         }
 
-        if (!process.env.DISCORD_GUILD_ID) {
+        if (!CONFIG.discord.server_id) {
             console.error("Discord guild id is missing.");
             return false;
         }
