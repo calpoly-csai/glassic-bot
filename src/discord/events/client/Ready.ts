@@ -5,6 +5,7 @@ import Command from "../../classes/Command";
 import { RecurrenceRule, scheduleJob } from "node-schedule";
 import getDiscordEventsJob from "../../../jobs/syncDiscordEventsJob";
 import Logger from "../../../utils/Logger";
+import { CONFIG } from "../../..";
 
 export default class Ready extends Event {
     constructor(client: DiscordClient) {
@@ -32,7 +33,7 @@ export default class Ready extends Event {
 
         const setCommands: any = await rest.put(Routes.applicationGuildCommands(
             process.env.DISCORD_CLIENT_ID!,
-            process.env.DISCORD_GUILD_ID!,
+            CONFIG.discord.server_id,
         ), {
             body: commands
         }).catch((err) => {
