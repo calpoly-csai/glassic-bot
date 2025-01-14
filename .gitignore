@@ -3,3 +3,5 @@ build
 config.json
 .env
 credentials.json
+package-lock.json
+*.log
