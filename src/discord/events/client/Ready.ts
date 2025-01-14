@@ -31,9 +31,8 @@ export default class Ready extends Event {
         const commands: object[] = this.GetJson(this.client.commands);
         const rest = new REST().setToken(process.env.DISCORD_APP_TOKEN!);
 
-        const setCommands: any = await rest.put(Routes.applicationGuildCommands(
+        const setCommands: any = await rest.put(Routes.applicationCommands(
             process.env.DISCORD_CLIENT_ID!,
-            CONFIG.discord.server_id,
         ), {
             body: commands
         }).catch((err) => {
@@ -52,8 +51,10 @@ export default class Ready extends Event {
         rule.hour = 8;
         rule.tz = "America/Los_Angeles";
 
+        this.client.guilds.cache.forEach(guild => {
+            scheduleJob(rule, getDiscordEventsJob(this.client, guild));
+        })
 
-        scheduleJob(rule, getDiscordEventsJob(this.client));
         Logger.once("setup", "Successfully set up interval sync.")
     }
 

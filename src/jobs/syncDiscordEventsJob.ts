@@ -1,4 +1,4 @@
-import { GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildScheduledEventStatus } from "discord.js";
+import { Guild, GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel } from "discord.js";
 import DiscordClient from "../discord/classes/DiscordClient";
 import { NotionEvent } from "../notion/NotionClient";
 import Logger from "../utils/Logger";
@@ -7,7 +7,7 @@ import { CONFIG } from "..";
 
 const NAME = "Sync Discord Events";
 
-const getDiscordEventsJob = (client: DiscordClient) => async () => {
+const getDiscordEventsJob = (client: DiscordClient, guild: Guild | null) => async () => {
 
     const whenDone = (log: string, success: boolean) =>
         sendDiscordJobSummary(
@@ -30,8 +30,6 @@ const getDiscordEventsJob = (client: DiscordClient) => async () => {
     const notionEvents = new Map<string, NotionEvent>();
     // list of the names of discord events that aren't from Notion (or invalid id)
     const discordWithoutNotion = [];
-
-    const guild = client.guilds.cache.get(CONFIG.discord.server_id!);
 
     if (!guild) {
         logger.fail("Failed to fetch guild - guild with provided ID not found?.");
