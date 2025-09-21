@@ -60,14 +60,19 @@ const getDiscordEventsJob = (client: DiscordClient, guild: Guild | null) => asyn
     // iterate through the events and check if they have a notion id, log if they do/dont
     discordCurrentEventsRes.forEach((event) => {
         // check if this event has a notion page id
-        const possibleNotionId = event.description?.split("!@NotionId:")[1].split("_")[0];
-        if (possibleNotionId && notionIdToDiscordId.has(possibleNotionId)) {
-            // found a valid notion id for this discord event
-            notionIdToDiscordId.set(possibleNotionId, event.id);
-        } else {
+        try {
+            const possibleNotionId = event.description?.split("!@NotionId:")[1].split("_")[0];
+            if (possibleNotionId && notionIdToDiscordId.has(possibleNotionId)) {
+                // found a valid notion id for this discord event
+                notionIdToDiscordId.set(possibleNotionId, event.id);
+            } else {
+                throw new Error("No valid Notion ID found");
+            }
+        } catch (error) {
             // no notion id found for this discord event
             discordWithoutNotion.push(event.name);
             logger.warn("Found Discord event with no/invalid Notion ID: " + event.name);
+
         }
     })
 
