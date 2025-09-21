@@ -12,7 +12,7 @@ export default class SyncDiscord extends SubCommand {
     }
 
     Execute(interaction: ChatInputCommandInteraction) {
-        interaction.reply({ content: `Syncing events from Notion to GCal. See logs in <#${CONFIG.discord.logs.channel_id}>.`, ephemeral: true })
+        interaction.reply({ content: `Syncing events from Notion to Discord. See logs in <#${CONFIG.discord.logs.channel_id}>.`, ephemeral: true })
         getDiscordEventsJob(this.client, interaction.guild)();
     }
 }
