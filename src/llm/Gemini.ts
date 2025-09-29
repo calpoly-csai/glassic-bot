@@ -8,7 +8,7 @@ export default class Gemini implements LLM {
     constructor() {
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
         this.gemini = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash-latest",
+            model: "gemini-flash-latest",
             systemInstruction: `When prompted, please respond to the prompt with no additional 
                                 information, formatting, or fluff, other than what is requested in that specific prompt.`,
         }, { apiVersion: "v1beta" });
@@ -16,11 +16,11 @@ export default class Gemini implements LLM {
 
     async prompt(prompt: string) {
         let res = (await this.gemini.generateContent(prompt)
-            .catch((err) => Logger.once("Gemini", "ERROR:\n" + JSON.stringify(err, null, 2))))
+            .catch((err) => Logger.once("Gemini", "ERROR: Failed to generate response\n" + JSON.stringify(err, null, 2))))
         if (!res) return;
 
         let content = res.response.text().trim();
-        Logger.once("Gemini", content);
+        Logger.once("Gemini", "SUCCESS: Generated the following response" + content);
 
         return content
     }
