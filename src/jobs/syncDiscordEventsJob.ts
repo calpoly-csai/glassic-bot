@@ -72,7 +72,6 @@ const getDiscordEventsJob = (client: DiscordClient, guild: Guild | null) => asyn
             // no notion id found for this discord event
             discordWithoutNotion.push(event.name);
             logger.warn("Found Discord event with no/invalid Notion ID: " + event.name);
-
         }
     })
 
