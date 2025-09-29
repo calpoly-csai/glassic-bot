@@ -63,7 +63,11 @@ export default class DiscordClient extends Client implements ICustomClient {
         const logError = logger ? logger.error : Logger.once;
         const logInfo = (a: string, b: string) => logger ? logger.info(b) : Logger.once(a, b);
 
-        console.log("trying to log with", typeof logger, logger?.jobName);
+        if (logger){
+            console.log("trying to log with", typeof logger, logger?.jobName);
+        } else {
+            console.log("Running without logger");
+        }
 
         if (!targetChannel) {
             logError("send discord message", `Could not find channel with ID ${channelId}.`);
